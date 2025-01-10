@@ -14,6 +14,7 @@ import {
   generateAuthSig,
 } from "@lit-protocol/auth-helpers";
 import { encryptString, decryptToString } from "@lit-protocol/encryption";
+import { AccessControlService } from './accessControl';
 
 interface EncryptedData {
   ciphertext: string;
@@ -40,24 +41,16 @@ class LitService {
     await this.client.disconnect();
   }
 
-  async encryptData(data: any): Promise<EncryptedData> {
+  async encryptData(data: any, groupId: string): Promise<EncryptedData> {
     if (!this.client) {
       throw new Error('Lit client not initialized');
     }
 
-    const accessControlConditions = [
-        {
-          contractAddress: "",
-          standardContractType: "",
-          chain: "ethereum",
-          method: "eth_getBalance",
-          parameters: [":userAddress", "latest"],
-          returnValueTest: {
-            comparator: ">=",
-            value: "1000000000000", // 0.000001 ETH
-          },
-        },
-      ];
+    // Use combined member and creator access
+    const accessControlConditions = AccessControlService.getConditions(['member', 'creator'], {
+      groupId,
+      contractAddress: process.env.NEXT_PUBLIC_TRUSTPOOL_CONTRACT!
+    });
 
     try {
       // Convert data to string if it's an object
@@ -79,24 +72,16 @@ class LitService {
     }
   }
 
-  async decryptData(encryptedData: EncryptedData): Promise<any> {
+  async decryptData(encryptedData: EncryptedData, groupId: string): Promise<any> {
     if (!this.client) {
       throw new Error('Lit client not initialized');
     }
 
-    const accessControlConditions = [
-        {
-          contractAddress: "",
-          standardContractType: "",
-          chain: "ethereum",
-          method: "eth_getBalance",
-          parameters: [":userAddress", "latest"],
-          returnValueTest: {
-            comparator: ">=",
-            value: "1000000000000", // 0.000001 ETH
-          },
-        },
-      ];
+    // Use the same combined access as encryption
+    const accessControlConditions = AccessControlService.getConditions(['member', 'creator'], {
+      groupId,
+      contractAddress: process.env.NEXT_PUBLIC_TRUSTPOOL_CONTRACT!
+    });
 
     try {
       // Get session signatures

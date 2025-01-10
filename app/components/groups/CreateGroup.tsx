@@ -3,7 +3,9 @@ import { useLit } from '@/lib/lit/useLit';
 
 export function CreateGroup() {
   const [groupData, setGroupData] = useState({
+    id: '',
     name: '',
+    description: '',
     contributionAmount: '',
     schedule: '',
   });
@@ -14,10 +16,11 @@ export function CreateGroup() {
     e.preventDefault();
     
     // Encrypt group data using Lit Protocol
-    const encryptedData = await encryptGroupData(groupData);
+    const encryptedData = await encryptGroupData(groupData, groupData.id);
     
     // Store encrypted data
     // Setup access control conditions
+
   };
 
   return (

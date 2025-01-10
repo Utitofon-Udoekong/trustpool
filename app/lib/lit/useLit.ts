@@ -27,18 +27,18 @@ export function useLit() {
     };
   }, []);
 
-  const encryptGroupData = async (data: any) => {
+  const encryptGroupData = async (data: any, groupId: string) => {
     if (!isInitialized) {
       throw new Error('Lit Protocol not initialized');
     }
-    return litService.encryptData(data);
+    return litService.encryptData(data, groupId);
   };
 
-  const decryptGroupData = async (encryptedData: any) => {
+  const decryptGroupData = async (encryptedData: any, groupId: string) => {
     if (!isInitialized) {
       throw new Error('Lit Protocol not initialized');
     }
-    return litService.decryptData(encryptedData);
+    return litService.decryptData(encryptedData, groupId);
   };
 
   return {
