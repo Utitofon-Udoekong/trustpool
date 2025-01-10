@@ -7,18 +7,15 @@ export function useZkEmail() {
   const [isVerifying, setIsVerifying] = useState(false);
   const [verificationError, setVerificationError] = useState<string | null>(null);
 
-  const verifyEmail = async (email: string) => {
+  const verifyEmail = async (emlContent: string) => {
     setIsVerifying(true);
     setVerificationError(null);
 
     try {
-      // Generate proof (this would typically involve user interaction)
-      const proof = await generateProof(email);
+      const result = await zkEmailVerifier.verifyEmail(emlContent);
       
-      const result = await zkEmailVerifier.verifyEmail(email, proof);
-      
-      if (!result.isValid) {
-        throw new Error(result.error || 'Verification failed');
+      if (!result.success) {
+        throw new Error(result.error || 'ZK Email verification failed');
       }
 
       return result.emailHash;
@@ -36,10 +33,4 @@ export function useZkEmail() {
     isVerifying,
     verificationError,
   };
-}
-
-// This would be implemented based on the specific zk-email library requirements
-async function generateProof(email: string): Promise<any> {
-  // Implementation depends on the specific zk-email library being used
-  throw new Error('Not implemented');
 } 
