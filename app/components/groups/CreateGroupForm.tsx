@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useAuth } from '@/lib/auth/AuthContext';
 import { useLit } from '@/lib/lit/useLit';
 import type { SavingsGroup } from '@/types/group';
+import { EmailVerification } from '@/components/auth/EmailVerification';
 
 interface FormData {
   name: string;
@@ -28,6 +29,7 @@ export function CreateGroupForm() {
     duration: '6',
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [verifiedEmail, setVerifiedEmail] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -194,9 +196,18 @@ export function CreateGroupForm() {
         />
       </div>
 
+      {!verifiedEmail && (
+        <div className="border-t pt-6">
+          <h3 className="text-lg font-medium mb-4">Verify Your Email</h3>
+          <EmailVerification 
+            onVerified={(emailHash) => setVerifiedEmail(emailHash)} 
+          />
+        </div>
+      )}
+
       <button
         type="submit"
-        disabled={!isConnected || !isInitialized || isSubmitting}
+        disabled={!isConnected || !isInitialized || isSubmitting || !verifiedEmail}
         className="w-full px-4 py-2 bg-foreground text-background rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50"
       >
         {isSubmitting ? 'Creating...' : 'Create Savings Group'}
