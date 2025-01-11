@@ -24,13 +24,12 @@ export function useCCTP() {
             const provider = new ethers.BrowserProvider(window.ethereum);
             const cctpService = new CCTPService(provider, sourceChain, destinationChain);
 
-            const tx = await cctpService.initiateCrossChainTransfer(
+            const { transactionHash } = await cctpService.initiateCrossChainTransfer(
                 amount,
                 account.bech32Address
             );
 
-            await tx.wait();
-            return tx.hash;
+            return transactionHash;
         } catch (err) {
             console.error('Cross-chain transfer failed:', err);
             setError('Failed to initiate cross-chain transfer');
