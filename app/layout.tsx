@@ -19,8 +19,34 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "TrustPool",
-  description: "A Social Savings Club with Privacy",
+  title: {
+    default: 'TrustPool - A Social Savings Club with Privacy',
+    template: '%s | TrustPool'
+  },
+  description: 'A decentralized social savings club with built-in privacy features for secure group savings.',
+  keywords: ['savings', 'group savings', 'privacy', 'blockchain', 'decentralized finance'],
+  authors: [{ name: 'TrustPool Team' }],
+  openGraph: {
+    title: 'TrustPool - A Social Savings Club with Privacy',
+    description: 'A decentralized social savings club with built-in privacy features for secure group savings.',
+    url: 'https://trustpool.app',
+    siteName: 'TrustPool',
+    images: [
+      {
+        url: '/og-image.png',
+        width: 1200,
+        height: 630,
+        alt: 'TrustPool'
+      }
+    ],
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'TrustPool - A Social Savings Club with Privacy',
+    description: 'A decentralized social savings club with built-in privacy features for secure group savings.',
+    images: ['/twitter-image.png'],
+  },
 };
 
 const treasuryConfig = {

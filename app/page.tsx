@@ -1,101 +1,172 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { WalletConnect } from '@/components/auth/WalletConnect';
+import { AuthModal } from '@/components/auth/AuthModal';
+import { useAuth } from '@/lib/auth/AuthContext';
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
+export default function HomePage() {
+    const router = useRouter();
+    const { isConnected } = useAuth();
+    const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+
+    const handleGetStarted = () => {
+        if (isConnected) {
+            router.push('/groups');
+        } else {
+            setIsAuthModalOpen(true);
+        }
+    };
+
+    return (
+        <div className="min-h-screen">
+            {/* Header */}
+            <header className="border-b">
+                <div className="container mx-auto px-4 py-4">
+                    <div className="flex justify-between items-center">
+                        <h1 className="text-xl font-bold">TrustPool</h1>
+                        <WalletConnect />
+                    </div>
+                </div>
+            </header>
+
+            {/* Hero Section */}
+            <section className="bg-gradient-to-b from-background to-gray-50">
+                <div className="container mx-auto px-4 py-20">
+                    <div className="max-w-3xl mx-auto text-center">
+                        <h2 className="text-4xl font-bold mb-6">
+                            Privacy-First Social Savings
+                        </h2>
+                        <p className="text-xl mb-8 text-gray-600">
+                            Join trusted savings groups with built-in privacy features and secure cross-chain transactions.
+                        </p>
+                        <button
+                            onClick={handleGetStarted}
+                            className="inline-block px-6 py-3 bg-foreground text-background rounded-lg hover:opacity-90"
+                        >
+                            {isConnected ? 'Go to Dashboard' : 'Get Started'}
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            {/* Features Grid */}
+            <section className="py-20">
+                <div className="container mx-auto px-4">
+                    <h3 className="text-2xl font-bold text-center mb-12">Why Choose TrustPool?</h3>
+                    <div className="grid md:grid-cols-3 gap-8">
+                        <div className="p-6 border rounded-lg">
+                            <div className="w-12 h-12 bg-foreground text-background rounded-full flex items-center justify-center mb-4">
+                                🔒
+                            </div>
+                            <h4 className="text-lg font-semibold mb-2">Privacy Protected</h4>
+                            <p className="text-gray-600">
+                                End-to-end encryption ensures your group&apos;s data remains private and secure.
+                            </p>
+                        </div>
+                        <div className="p-6 border rounded-lg">
+                            <div className="w-12 h-12 bg-foreground text-background rounded-full flex items-center justify-center mb-4">
+                                💰
+                            </div>
+                            <h4 className="text-lg font-semibold mb-2">Cross-Chain USDC</h4>
+                            <p className="text-gray-600">
+                                Seamlessly transfer USDC across different blockchain networks.
+                            </p>
+                        </div>
+                        <div className="p-6 border rounded-lg">
+                            <div className="w-12 h-12 bg-foreground text-background rounded-full flex items-center justify-center mb-4">
+                                📊
+                            </div>
+                            <h4 className="text-lg font-semibold mb-2">Smart Distribution</h4>
+                            <p className="text-gray-600">
+                                Automated and fair distribution of funds among group members.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* How It Works */}
+            <section className="bg-gray-50 py-20">
+                <div className="container mx-auto px-4">
+                    <h3 className="text-2xl font-bold text-center mb-12">How It Works</h3>
+                    <div className="max-w-3xl mx-auto">
+                        <div className="space-y-8">
+                            <div className="flex gap-4">
+                                <div className="w-8 h-8 rounded-full bg-foreground text-background flex items-center justify-center flex-shrink-0">
+                                    1
+                                </div>
+                                <div>
+                                    <h4 className="text-lg font-semibold mb-2">Create or Join a Group</h4>
+                                    <p className="text-gray-600">
+                                        Start your own savings group or join an existing one with trusted members.
+                                    </p>
+                                </div>
+                            </div>
+                            <div className="flex gap-4">
+                                <div className="w-8 h-8 rounded-full bg-foreground text-background flex items-center justify-center flex-shrink-0">
+                                    2
+                                </div>
+                                <div>
+                                    <h4 className="text-lg font-semibold mb-2">Make Contributions</h4>
+                                    <p className="text-gray-600">
+                                        Contribute USDC according to your group&apos;s schedule using any supported blockchain.
+                                    </p>
+                                </div>
+                            </div>
+                            <div className="flex gap-4">
+                                <div className="w-8 h-8 rounded-full bg-foreground text-background flex items-center justify-center flex-shrink-0">
+                                    3
+                                </div>
+                                <div>
+                                    <h4 className="text-lg font-semibold mb-2">Receive Distributions</h4>
+                                    <p className="text-gray-600">
+                                        Get your share of the pool when it&apos;s your turn, based on your group&apos;s rules.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* CTA Section */}
+            <section className="py-20">
+                <div className="container mx-auto px-4 text-center">
+                    <h3 className="text-2xl font-bold mb-4">Ready to Start Saving?</h3>
+                    <p className="text-gray-600 mb-8">
+                        Join TrustPool today and experience secure group savings with privacy.
+                    </p>
+                    <Link
+                        href="/groups"
+                        className="inline-block px-6 py-3 bg-foreground text-background rounded-lg hover:opacity-90"
+                    >
+                        Create Your First Group
+                    </Link>
+                </div>
+            </section>
+
+            {/* Footer */}
+            <footer className="border-t">
+                <div className="container mx-auto px-4 py-8">
+                    <div className="text-center text-sm text-gray-600">
+                        © {new Date().getFullYear()} TrustPool. All rights reserved.
+                    </div>
+                </div>
+            </footer>
+
+            {/* Auth Modal */}
+            <AuthModal 
+                isOpen={isAuthModalOpen}
+                onClose={() => {
+                    setIsAuthModalOpen(false);
+                    if (isConnected) {
+                        router.push('/groups');
+                    }
+                }}
             />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
-  );
+    );
 }
