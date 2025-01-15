@@ -1,32 +1,36 @@
 "use client";
 
-import { useState } from 'react';
-import { Abstraxion } from "@burnt-labs/abstraxion";
-import { useAuth } from '@/lib/auth/AuthContext';
+import {
+  Abstraxion,
+  useAbstraxionAccount,
+  useModal
+} from "@burnt-labs/abstraxion";
+import { Button } from "@burnt-labs/ui";
 
 export function WalletConnect() {
-  const [isOpen, setIsOpen] = useState(false);
-  const { isConnected, user } = useAuth();
+  const { data: { bech32Address }, isConnected } = useAbstraxionAccount();
+  const [, setShow] = useModal();
 
   return (
     <div>
-      <Abstraxion onClose={() => setIsOpen(false)} />
-      
-      {!isConnected ? (
-        <button 
-          onClick={() => setIsOpen(true)}
-          className="px-4 py-2 bg-foreground text-background rounded-lg hover:opacity-90 transition-opacity"
-        >
-          Connect Wallet
-        </button>
-      ) : (
-        <div className="flex items-center gap-2">
-          <span className="text-sm opacity-75">Connected:</span>
-          <code className="text-sm bg-background/10 px-2 py-1 rounded">
-            {user?.address?.slice(0, 6)}...{user?.address?.slice(-4)}
-          </code>
-        </div>
-      )}
+      <Button
+        onClick={() => setShow(true)}
+        structure="base"
+        className="px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition-colors"
+      >
+        {bech32Address ? (
+          <div className="flex items-center gap-2">
+            <span className="text-sm opacity-75">Connected:</span>
+            <code className="text-sm bg-gray-800 px-2 py-1 rounded">
+              {bech32Address.slice(0, 6)}...{bech32Address.slice(-4)}
+            </code>
+          </div>
+        ) : (
+          "Connect Wallet"
+        )}
+      </Button>
+
+      <Abstraxion onClose={() => setShow(false)} />
     </div>
   );
 } 

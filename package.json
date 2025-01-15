@@ -11,10 +11,15 @@
   "dependencies": {
     "@bandprotocol/bandchain.js": "^2.2.1",
     "@burnt-labs/abstraxion": "1.0.0-alpha.55",
+    "@burnt-labs/ui": "0.1.0-alpha.15",
+    "@cosmjs/cosmwasm-stargate": "^0.32.4",
+    "@cosmjs/launchpad": "^0.27.1",
     "@cosmjs/proto-signing": "^0.32.4",
     "@cosmjs/stargate": "^0.32.4",
+    "@cosmjs/tendermint-rpc": "^0.32.4",
     "@headlessui/react": "^2.2.0",
     "@heroicons/react": "^2.2.0",
+    "@hookform/resolvers": "^3.10.0",
     "@lit-protocol/auth-helpers": "^7.0.4",
     "@lit-protocol/constants": "^7.0.4",
     "@lit-protocol/contracts-sdk": "^7.0.4",
@@ -31,9 +36,14 @@
     "@zk-email/helpers": "^6.3.2",
     "@zk-email/sdk": "0.0.85-4",
     "ethers": "^6.13.5",
+    "graz": "^0.1.31",
+    "long": "^5.2.4",
     "next": "15.1.4",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "react-hook-form": "^7.54.2",
+    "sonner": "^1.7.1",
+    "zod": "^3.24.1"
   },
   "devDependencies": {
     "@types/node": "^20",

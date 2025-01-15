@@ -1,25 +1,18 @@
 import { forwardRef } from 'react';
-import { formatUSDC } from '@/lib/format';
 
 interface AmountInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
     error?: string;
-    balance?: string;
     network?: string;
 }
 
 export const AmountInput = forwardRef<HTMLInputElement, AmountInputProps>(
-    ({ error, balance, network, ...props }, ref) => {
+    ({ error, network, ...props }, ref) => {
         return (
             <div className="space-y-2">
                 <div className="flex justify-between items-center">
                     <label className="block text-sm font-medium">
                         Amount
                     </label>
-                    {balance && network && (
-                        <span className="text-sm text-gray-500">
-                            Balance: {formatUSDC(balance)} on {network}
-                        </span>
-                    )}
                 </div>
                 <div className="relative">
                     <input

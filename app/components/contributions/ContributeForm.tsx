@@ -8,8 +8,6 @@ import { NetworkSelector } from './NetworkSelector';
 import { AmountInput } from './AmountInput';
 import { LoadingSpinner } from '../ui/LoadingSpinner';
 import { useToast } from '../ui/Toast';
-import { formatUSDC } from '@/lib/format';
-import { useUSDCBalance } from '@/lib/hooks/useUSDCBalance';
 
 const ContributionSchema = z.object({
     network: z.enum(['Ethereum', 'Arbitrum', 'Avalanche', 'Optimism', 'Base']),
@@ -33,7 +31,6 @@ export function ContributeForm({ groupId, onSuccess }: ContributeFormProps) {
     });
 
     const selectedNetwork = watch('network');
-    const { data: balance } = useUSDCBalance(selectedNetwork);
 
     const onSubmit = async (data: ContributionForm) => {
         try {
@@ -41,7 +38,7 @@ export function ContributeForm({ groupId, onSuccess }: ContributeFormProps) {
             // TODO: Implement contribution logic
             toast({
                 title: 'Contribution Started',
-                description: `Contributing ${formatUSDC(data.amount)} from ${data.network}`,
+                description: `Contributing $${Number(data.amount).toFixed(2)} from ${data.network}`,
             });
             onSuccess?.();
         } catch (error) {
@@ -67,7 +64,6 @@ export function ContributeForm({ groupId, onSuccess }: ContributeFormProps) {
                 <AmountInput
                     {...register('amount')}
                     error={errors.amount?.message}
-                    balance={balance}
                     network={selectedNetwork}
                 />
             </div>
