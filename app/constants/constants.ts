@@ -1,0 +1,2 @@
+export const TREASURY_CONTRACT_ADDRESS = 'xion1d8sge9vp2vhx30fw2f53k7cx0m7336yhtw6ulk92ujg0hng74hesddsyds'
+export const XION_CONTRACT_ADDRESS = 'xion12x6x8m6ym6cp6xx8p2u3xgtumkak3hd0qazhskrdxnm6k5ju4dhssa87fk'

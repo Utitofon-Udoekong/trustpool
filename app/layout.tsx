@@ -6,13 +6,14 @@ import { AbstraxionProvider } from "@burnt-labs/abstraxion";
 import { Toaster } from 'sonner';
 import "@burnt-labs/abstraxion/dist/index.css";
 import "@burnt-labs/ui/dist/index.css";
+import { TREASURY_CONTRACT_ADDRESS } from "./constants/constants";
 
 const geist = Geist({
   subsets: ["latin"],
 });
 
 const treasuryConfig = {
-  treasury: process.env.NEXT_PUBLIC_TREASURY_CONTRACT_ADDRESS || "",
+  treasury: TREASURY_CONTRACT_ADDRESS,
 };
 
 export default function RootLayout({
