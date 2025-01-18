@@ -1,3 +1,7 @@
+import { AuthErrorCode } from "./errors";
+
+import { AuthError } from "./errors";
+
 const STORAGE_KEY = 'trustpool_auth';
 
 // Add session configuration

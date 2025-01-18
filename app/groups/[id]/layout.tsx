@@ -8,8 +8,8 @@ export default function GroupDetailsLayout({
     children,
     params,
 }: {
-    children: React.ReactNode;
-    params: { id: string };
+    children: React.ReactNode,
+    params: { id: string }
 }) {
     const pathname = usePathname();
     const { group } = useGroup(params.id);
