@@ -13,8 +13,9 @@ import { RetryableError } from '@/components/ui/RetryableError';
 import { ErrorMessage } from '@/components/ui/ErrorMessage';
 import { GroupSettings } from '@/components/groups/GroupSettings';
 import Link from 'next/link';
-
-export default function GroupDetailsPage({ params }: { params: { id: string } }) {
+import { useParams } from 'next/navigation';
+export default function GroupDetailsPage() {
+    const {id} = useParams()
     const { account, isReady, sendTransaction } = useXionAccount();
     const { 
         group, 
@@ -23,7 +24,7 @@ export default function GroupDetailsPage({ params }: { params: { id: string } })
         isLoading,
         fetchGroup,
         fetchTransactions
-    } = useGroup(params.id);
+    } = useGroup(id as string);
 
     const [error, setError] = useState<string | null>(null);
     const [transactionError, setTransactionError] = useState<string | null>(null);
