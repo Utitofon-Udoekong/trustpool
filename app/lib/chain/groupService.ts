@@ -1,6 +1,7 @@
 import { Coin } from "@cosmjs/stargate";
 import type { SavingsGroup, GroupTransaction, Member, Schedule, DistributionRules, PrivacySettings } from "@/types/group";
 import { useLit } from '../lit/useLit';
+import { TREASURY_CONTRACT_ADDRESS } from "@/constants/constants";
 
 interface CreateGroupParams {
     name: string;
@@ -163,7 +164,7 @@ export class GroupService {
         groupId: string
     ): Promise<Member[]> {
         const response = await client.queryContract({
-            address: process.env.NEXT_PUBLIC_TRUSTPOOL_CONTRACT!,
+            address: TREASURY_CONTRACT_ADDRESS,
             query: {
                 get_members: { group_id: groupId },
             },

@@ -1,228 +1,114 @@
 "use client";
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { useGroup } from '@/lib/hooks/useGroup';
-import { useLit } from '@/lib/lit/useLit';
-import type { Schedule } from '@/types/group';
-import { validateGroup } from '@/lib/validation/groupValidation';
-import { ErrorMessage } from '@/components/ui/ErrorMessage';
+import { useForm } from 'react-hook-form';
+import { Button } from '@burnt-labs/ui';
 
-interface FormData {
-    name: string;
-    description: string;
-    contributionAmount: string;
-    currency: string;
-    frequency: 'weekly' | 'monthly';
-    startDate: string;
-    duration: string;
+interface CreateGroupFormData {
+  name: string;
+  description?: string;
+  contributionAmount: number;
+  privacySettings: {
+    membersVisible: boolean;
+    amountsVisible: boolean;
+  };
 }
 
-export function CreateGroupForm() {
-    const router = useRouter();
-    const { createGroup, isLoading, isReady } = useGroup();
-    const { encryptGroupData, isInitialized } = useLit();
-    const [formData, setFormData] = useState<FormData>({
-        name: '',
-        description: '',
-        contributionAmount: '',
-        currency: 'USDC',
-        frequency: 'monthly',
-        startDate: '',
-        duration: '6',
-    });
-    const [errors, setErrors] = useState<{ field: string; message: string }[]>([]);
+interface CreateGroupFormProps {
+  onSubmit: (data: CreateGroupFormData) => void;
+  isLoading?: boolean;
+}
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setErrors([]);
-        
-        if (!isReady || !isInitialized) {
-            alert('Please connect your wallet and wait for initialization');
-            return;
-        }
+export function CreateGroupForm({ onSubmit, isLoading }: CreateGroupFormProps) {
+  const { register, handleSubmit, formState: { errors } } = useForm<CreateGroupFormData>();
 
-        try {
-            // Calculate end date based on duration
-            const startDate = new Date(formData.startDate);
-            const endDate = new Date(startDate);
-            endDate.setMonth(endDate.getMonth() + parseInt(formData.duration));
+  return (
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+      <div className="space-y-4">
+        <div>
+          <label htmlFor="name" className="block text-sm font-medium text-gray-200">
+            Group Name
+          </label>
+          <input
+            {...register("name", { required: "Name is required" })}
+            type="text"
+            className="mt-1 block w-full rounded-lg bg-gray-800 border border-gray-700 
+            text-white px-3 py-2 focus:border-purple-500 focus:ring-purple-500"
+            placeholder="Enter group name"
+          />
+          {errors.name && (
+            <p className="mt-1 text-sm text-red-500">{errors.name.message}</p>
+          )}
+        </div>
 
-            // Create schedule object
-            const schedule: Schedule = {
-                frequency: formData.frequency,
-                startDate,
-                endDate,
-            };
+        <div>
+          <label htmlFor="description" className="block text-sm font-medium text-gray-200">
+            Description
+          </label>
+          <textarea
+            {...register("description")}
+            rows={3}
+            className="mt-1 block w-full rounded-lg bg-gray-800 border border-gray-700 
+            text-white px-3 py-2 focus:border-purple-500 focus:ring-purple-500"
+            placeholder="Describe your savings group"
+          />
+        </div>
 
-            // Validate form data
-            const validationErrors = validateGroup({
-                name: formData.name,
-                description: formData.description,
-                contributionAmount: formData.contributionAmount,
-                currency: formData.currency,
-                schedule,
-            });
+        <div>
+          <label htmlFor="contributionAmount" className="block text-sm font-medium text-gray-200">
+            Contribution Amount (USDC)
+          </label>
+          <input
+            {...register("contributionAmount", { 
+              required: "Amount is required",
+              min: { value: 1, message: "Amount must be at least 1" }
+            })}
+            type="number"
+            className="mt-1 block w-full rounded-lg bg-gray-800 border border-gray-700 
+            text-white px-3 py-2 focus:border-purple-500 focus:ring-purple-500"
+            placeholder="0.00"
+          />
+          {errors.contributionAmount && (
+            <p className="mt-1 text-sm text-red-500">{errors.contributionAmount.message}</p>
+          )}
+        </div>
 
-            if (validationErrors.length > 0) {
-                setErrors(validationErrors);
-                return;
-            }
+        <div>
+          <label className="block text-sm font-medium text-gray-200 mb-2">
+            Privacy Settings
+          </label>
+          <div className="space-y-2">
+            <label className="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                {...register("privacySettings.membersVisible")}
+                className="rounded bg-gray-800 border-gray-700 text-purple-500 
+                focus:ring-purple-500"
+              />
+              <span className="text-sm text-gray-300">Show member list</span>
+            </label>
+            <label className="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                {...register("privacySettings.amountsVisible")}
+                className="rounded bg-gray-800 border-gray-700 text-purple-500 
+                focus:ring-purple-500"
+              />
+              <span className="text-sm text-gray-300">Show contribution amounts</span>
+            </label>
+          </div>
+        </div>
+      </div>
 
-            // Create group data
-            const groupId = crypto.randomUUID();
-            const groupData = {
-                id: groupId,
-                name: formData.name,
-                description: formData.description,
-                contributionAmount: {
-                    amount: (parseFloat(formData.contributionAmount) * 1_000_000).toString(), // Convert to micro units
-                    denom: formData.currency,
-                },
-                schedule,
-            };
-
-            // Encrypt sensitive data
-            const encryptedData = await encryptGroupData(groupData, groupData.id);
-
-            // Create group on chain
-            const result = await createGroup({
-                name: formData.name,
-                description: formData.description,
-                contributionAmount: groupData.contributionAmount,
-                encryptedData: JSON.stringify(encryptedData),
-            });
-
-            if (result) {
-                router.push('/groups');
-            }
-        } catch (error) {
-            console.error('Failed to create group:', error);
-            setErrors([{ field: 'submit', message: 'Failed to create group. Please try again.' }]);
-        }
-    };
-
-    return (
-        <form onSubmit={handleSubmit} className="space-y-6 max-w-2xl mx-auto">
-            {errors.length > 0 && (
-                <ErrorMessage
-                    title="Validation Error"
-                    message={errors.map(e => e.message).join('. ')}
-                />
-            )}
-            <div>
-                <label className="block text-sm font-medium mb-2">
-                    Group Name
-                </label>
-                <input
-                    type="text"
-                    required
-                    value={formData.name}
-                    onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                    className="w-full px-3 py-2 border rounded-lg"
-                    placeholder="Enter group name"
-                />
-            </div>
-
-            <div>
-                <label className="block text-sm font-medium mb-2">
-                    Description
-                </label>
-                <textarea
-                    required
-                    value={formData.description}
-                    onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                    className="w-full px-3 py-2 border rounded-lg"
-                    rows={3}
-                    placeholder="Describe your savings group"
-                />
-            </div>
-
-            <div className="grid md:grid-cols-2 gap-4">
-                <div>
-                    <label className="block text-sm font-medium mb-2">
-                        Contribution Amount
-                    </label>
-                    <input
-                        type="number"
-                        required
-                        min="0"
-                        step="0.000001"
-                        value={formData.contributionAmount}
-                        onChange={(e) => setFormData(prev => ({ ...prev, contributionAmount: e.target.value }))}
-                        className="w-full px-3 py-2 border rounded-lg"
-                    />
-                </div>
-
-                <div>
-                    <label className="block text-sm font-medium mb-2">
-                        Currency
-                    </label>
-                    <select
-                        value={formData.currency}
-                        onChange={(e) => setFormData(prev => ({ ...prev, currency: e.target.value }))}
-                        className="w-full px-3 py-2 border rounded-lg"
-                    >
-                        <option value="USDC">USDC</option>
-                        <option value="USDT">USDT</option>
-                    </select>
-                </div>
-            </div>
-
-            <div className="grid md:grid-cols-3 gap-4">
-                <div>
-                    <label className="block text-sm font-medium mb-2">
-                        Frequency
-                    </label>
-                    <select
-                        value={formData.frequency}
-                        onChange={(e) => setFormData(prev => ({ 
-                            ...prev, 
-                            frequency: e.target.value as 'weekly' | 'monthly' 
-                        }))}
-                        className="w-full px-3 py-2 border rounded-lg"
-                    >
-                        <option value="weekly">Weekly</option>
-                        <option value="monthly">Monthly</option>
-                    </select>
-                </div>
-
-                <div>
-                    <label className="block text-sm font-medium mb-2">
-                        Start Date
-                    </label>
-                    <input
-                        type="date"
-                        required
-                        value={formData.startDate}
-                        onChange={(e) => setFormData(prev => ({ ...prev, startDate: e.target.value }))}
-                        className="w-full px-3 py-2 border rounded-lg"
-                    />
-                </div>
-
-                <div>
-                    <label className="block text-sm font-medium mb-2">
-                        Duration (months)
-                    </label>
-                    <input
-                        type="number"
-                        required
-                        min="3"
-                        max="24"
-                        value={formData.duration}
-                        onChange={(e) => setFormData(prev => ({ ...prev, duration: e.target.value }))}
-                        className="w-full px-3 py-2 border rounded-lg"
-                    />
-                </div>
-            </div>
-
-            <button
-                type="submit"
-                disabled={!isReady || !isInitialized || isLoading}
-                className="w-full px-4 py-2 bg-foreground text-background rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50"
-            >
-                {isLoading ? 'Creating...' : 'Create Savings Group'}
-            </button>
-        </form>
-    );
+      <Button
+        type="submit"
+        disabled={isLoading}
+        structure="base"
+        className="w-full px-4 py-2 bg-purple-500 text-white rounded-lg 
+        hover:bg-purple-600 transition-colors disabled:opacity-50"
+      >
+        {isLoading ? 'Creating...' : 'Create Group'}
+      </Button>
+    </form>
+  );
 } 
