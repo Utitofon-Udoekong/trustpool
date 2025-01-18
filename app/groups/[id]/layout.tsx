@@ -1,18 +1,17 @@
 "use client";
 
-import { usePathname } from 'next/navigation';
+import { usePathname, useParams } from 'next/navigation';
 import Link from 'next/link';
 import { useGroup } from '@/lib/hooks/useGroup';
 
 export default function GroupDetailsLayout({
     children,
-    params,
 }: {
     children: React.ReactNode,
-    params: { id: string }
 }) {
     const pathname = usePathname();
-    const { group } = useGroup(params.id);
+    const {id} = useParams()
+    const { group } = useGroup(id as string);
 
     const isActive = (path: string) => pathname === path;
 
@@ -26,9 +25,9 @@ export default function GroupDetailsLayout({
                         <h1 className="text-2xl font-bold mb-4">{group.name}</h1>
                         <nav className="flex gap-4">
                             <Link 
-                                href={`/groups/${params.id}`}
+                                href={`/groups/${id}`}
                                 className={`px-3 py-2 rounded-lg ${
-                                    isActive(`/groups/${params.id}`)
+                                    isActive(`/groups/${id}`)
                                         ? 'bg-foreground text-background'
                                         : 'hover:bg-gray-100'
                                 }`}
@@ -36,9 +35,9 @@ export default function GroupDetailsLayout({
                                 Overview
                             </Link>
                             <Link 
-                                href={`/groups/${params.id}/transactions`}
+                                href={`/groups/${id}/transactions`}
                                 className={`px-3 py-2 rounded-lg ${
-                                    isActive(`/groups/${params.id}/transactions`)
+                                    isActive(`/groups/${id}/transactions`)
                                         ? 'bg-foreground text-background'
                                         : 'hover:bg-gray-100'
                                 }`}
