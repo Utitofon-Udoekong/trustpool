@@ -11,14 +11,15 @@ import { TransactionDetails } from '@/components/transactions/TransactionDetails
 import { GroupService } from '@/lib/chain/groupService';
 import { Pagination } from '@/components/ui/Pagination';
 import { Search } from '@/components/ui/Search';
-
+import { useParams } from 'next/navigation';
 type FilterType = 'all' | 'contribution' | 'distribution';
 type SortField = 'date' | 'amount';
 type SortOrder = 'asc' | 'desc';
 
-export default function TransactionsPage({ params }: { params: { id: string } }) {
+export default function TransactionsPage() {
+    const {id} = useParams()
     const { account, isReady, sendTransaction } = useXionAccount();
-    const { group, transactions, isLoading, fetchTransactions } = useGroup(params.id);
+    const { group, transactions, isLoading, fetchTransactions } = useGroup(id as string);
     const [error, setError] = useState<string | null>(null);
     const [filter, setFilter] = useState<FilterType>('all');
     const [sortField, setSortField] = useState<SortField>('date');
@@ -44,7 +45,7 @@ export default function TransactionsPage({ params }: { params: { id: string } })
             try {
                 setError(null);
                 if (isReady) {
-                    const { transactions: txs, total } = await fetchTransactions(currentPage, pageSize);
+                    const { total } = await fetchTransactions(currentPage, pageSize) ?? {total: 0};
                     setTotalTransactions(total);
                 }
             } catch (err) {
@@ -112,7 +113,7 @@ export default function TransactionsPage({ params }: { params: { id: string } })
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `transactions-${params.id}.csv`;
+        a.download = `transactions-${id}.csv`;
         a.click();
         window.URL.revokeObjectURL(url);
     };
@@ -168,7 +169,7 @@ export default function TransactionsPage({ params }: { params: { id: string } })
             <div className="max-w-4xl mx-auto">
                 <div className="flex items-center gap-4 mb-8">
                     <Link 
-                        href={`/groups/${params.id}`}
+                        href={`/groups/${id}`}
                         className="text-sm hover:opacity-70"
                     >
                         ← Back to Group
